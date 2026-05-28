@@ -1,11 +1,23 @@
 import React from "react";
 import Header from "./Header";
+import { validateData } from "../utils/validations";
 
 const Login = () => {
     const [isLogin, setIsLogin] = React.useState(true);
+    const email = React.useRef();
+    const password = React.useRef();
+    const [error, setError] = React.useState(null);
+
     const toggleLogin = () => {
         setIsLogin(!isLogin);
     };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const error = validateData(email.current.value, password.current.value);
+        setError(error);
+    };
+
 
     return (
         <div className="relative">
@@ -31,13 +43,16 @@ const Login = () => {
                     type="email"
                     placeholder="Email"
                     className="w-full p-3 mb-4 rounded bg-gray-800 text-white"
+                    ref={email}
                 />
                 <input
                     type="password"
                     placeholder="Password"
                     className="w-full p-3 mb-4 rounded bg-gray-800 text-white"
+                    ref={password}
                 />
-                <button className="w-full bg-red-600 py-3 rounded text-white font-bold">
+                {error && <p className="text-red-500">{error}</p>}
+                <button className="w-full bg-red-600 py-3 rounded text-white font-bold" onClick={handleSubmit}>
                     {isLogin ? "Sign In" : "Sign Up"}
                 </button>
                 <p className="text-white mt-4">
