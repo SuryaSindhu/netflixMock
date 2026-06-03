@@ -7,8 +7,8 @@ const MainContainer = () => {
     const nowPlayingMovies = useSelector((state) => state.movies.nowPlaying);
     return (
         <div className="relative h-screen overflow-hidden">
-            <VideoBG movieId={nowPlayingMovies[1]?.id} />
-            <VideoInfo title={nowPlayingMovies[1]?.title} overview={nowPlayingMovies[1]?.overview} />
+            <VideoBG movieId={nowPlayingMovies[0]?.id} />
+            <VideoInfo title={nowPlayingMovies[0]?.title} overview={nowPlayingMovies[0]?.overview} />
         </div>
     );
 };
