@@ -8,7 +8,7 @@ const MainContainer = () => {
     return (
         <div className="relative h-screen overflow-hidden">
             <VideoBG movieId={nowPlayingMovies[0]?.id} />
-            <VideoInfo title={nowPlayingMovies[0]?.title} overview={nowPlayingMovies[0]?.overview} />
+            <VideoInfo title={nowPlayingMovies[0]?.title} overview={nowPlayingMovies[0]?.overview} movieId={nowPlayingMovies[0]?.id} />
         </div>
     );
 };

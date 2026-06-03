@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 import { TMDB_OPTIONS } from '../utils/constants';
 
 const IMG_CDN = "https://image.tmdb.org/t/p/w300";
 
 const MoviePopup = ({ movie, position, onClose }) => {
     const [details, setDetails] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetch(`https://api.themoviedb.org/3/movie/${movie.id}?language=en-US`, TMDB_OPTIONS)
@@ -19,7 +21,9 @@ const MoviePopup = ({ movie, position, onClose }) => {
             style={{ left: position.x - 120, top: position.y - 150 }}
             onMouseLeave={onClose}
         >
-            <div className="w-60 bg-zinc-900 rounded-md shadow-xl animate-popIn">
+            <div className="w-60 bg-zinc-900 rounded-md shadow-xl animate-popIn cursor-pointer"
+                onClick={(e) => { e.stopPropagation(); navigate('/play/' + movie.id); }}
+            >
             <img
                 src={IMG_CDN + (movie.backdrop_path || movie.poster_path)}
                 alt={movie.title}

@@ -1,7 +1,10 @@
-import { createBrowserRouter, Outlet, useNavigate } from 'react-router-dom'
+import { createBrowserRouter, Outlet, useNavigate, useLocation } from 'react-router-dom'
+import { AnimatePresence, motion } from 'framer-motion';
 import Login from './components/Login';
 import Browse from './components/Browse';
 import Header from './components/Header';
+import PlayPage from './components/PlayPage';
+import ProtectedRoute from './components/ProtectedRoute';
 import { useEffect } from 'react';
 import { auth } from './utils/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -12,6 +15,8 @@ import { setUser, clearUser } from './utils/userSlice';
 function App() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const location = useLocation();
+
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -32,7 +37,17 @@ function App() {
     return (
             <div className="App">
                 <Header />
-                <Outlet />
+                <AnimatePresence mode="popLayout">
+                    <motion.div
+                        key={location.pathname}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.15 }}
+                    >
+                        <Outlet />
+                    </motion.div>
+                </AnimatePresence>
             </div>
 );
 }
@@ -48,7 +63,11 @@ export const appRouter = createBrowserRouter([
             },
             {
                 path: "/browse",
-                element: <Browse />,
+                element: <ProtectedRoute><Browse /></ProtectedRoute>,
+            },
+            {
+                path: "/play/:movieId",
+                element: <ProtectedRoute><PlayPage /></ProtectedRoute>,
             }
         ]
     }
