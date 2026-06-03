@@ -1,16 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const IMG_CDN = "https://image.tmdb.org/t/p/w300";
 
 const EpisodeCard = ({ episode }) => {
-    const trimmedOverview = episode.overview && episode.overview.length > 150
+    const [expanded, setExpanded] = useState(false);
+    const isLong = episode.overview && episode.overview.length > 150;
+    const displayOverview = isLong && !expanded
         ? episode.overview.slice(0, 150) + '...'
         : episode.overview;
 
     return (
-        <div className="flex gap-4 py-4 border-b border-zinc-800 hover:bg-zinc-900 rounded-md px-2 transition-colors">
+        <div className="flex gap-3 md:gap-4 py-3 md:py-4 border-b border-zinc-800 hover:bg-zinc-900 rounded-md px-2 transition-colors">
             {/* Thumbnail */}
-            <div className="flex-shrink-0 w-40">
+            <div className="flex-shrink-0 w-24 md:w-40">
                 {episode.still_path ? (
                     <img
                         src={IMG_CDN + episode.still_path}
@@ -19,7 +21,7 @@ const EpisodeCard = ({ episode }) => {
                     />
                 ) : (
                     <div className="w-full aspect-video bg-zinc-800 rounded flex items-center justify-center">
-                        <span className="text-gray-600 text-sm">No Image</span>
+                        <span className="text-gray-600 text-xs md:text-sm">No Image</span>
                     </div>
                 )}
             </div>
@@ -39,8 +41,18 @@ const EpisodeCard = ({ episode }) => {
                 {episode.air_date && (
                     <p className="text-gray-500 text-xs mt-1">{episode.air_date}</p>
                 )}
-                {trimmedOverview && (
-                    <p className="text-gray-400 text-xs mt-2 leading-relaxed">{trimmedOverview}</p>
+                {displayOverview && (
+                    <p className="text-gray-400 text-xs mt-2 leading-relaxed">
+                        {displayOverview}
+                        {isLong && (
+                            <button
+                                onClick={() => setExpanded(!expanded)}
+                                className="ml-1 text-white hover:text-red-500 font-medium transition-colors"
+                            >
+                                {expanded ? 'Show Less' : 'Read More'}
+                            </button>
+                        )}
+                    </p>
                 )}
             </div>
         </div>

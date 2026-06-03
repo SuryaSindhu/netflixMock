@@ -5,6 +5,8 @@ import Browse from './components/Browse';
 import Header from './components/Header';
 import PlayPage from './components/PlayPage';
 import ShowPage from './components/ShowPage';
+import PersonPage from './components/PersonPage';
+import SearchPage from './components/SearchPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useEffect } from 'react';
 import { auth } from './utils/firebase';
@@ -22,14 +24,12 @@ function App() {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user) {
                 const { uid, email, displayName } = auth.currentUser;
-                console.log("signed in User ID:", uid, "displayName:", displayName);
                 dispatch(setUser({ uid, email, displayName }));
-                navigate("/browse");
+                if (window.location.pathname === '/') navigate("/browse", { replace: true });
             } else {
                 // User is signed out
-                console.log("User is signed out");
                 dispatch(clearUser());
-                navigate("/");
+                navigate("/", { replace: true });
             }
             });
         return () => unsubscribe();
@@ -73,6 +73,14 @@ export const appRouter = createBrowserRouter([
             {
                 path: "/shows/:movieId",
                 element: <ProtectedRoute><ShowPage /></ProtectedRoute>,
+            },
+            {
+                path: "/person/:personId",
+                element: <ProtectedRoute><PersonPage /></ProtectedRoute>,
+            },
+            {
+                path: "/search",
+                element: <ProtectedRoute><SearchPage /></ProtectedRoute>,
             }
         ]
     }

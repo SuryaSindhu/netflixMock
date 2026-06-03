@@ -34,10 +34,15 @@ const MovieCard = ({ movie }) => {
   return (
     <div
       ref={cardRef}
-      className="w-36 md:w-48 flex-shrink-0 cursor-pointer"
-      onMouseEnter={() => setIsHovered(true)}
+      className="w-28 md:w-48 flex-shrink-0 cursor-pointer"
+      onMouseEnter={() => {
+        if (window.innerWidth >= 768) setIsHovered(true);
+      }}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={() => navigate((contentType === 'tv' ? '/shows/' : '/movies/') + movie.id)}
+      onClick={() => {
+        const isTV = movie.media_type === 'tv' || (!movie.media_type && contentType === 'tv');
+        navigate((isTV ? '/shows/' : '/movies/') + movie.id);
+      }}
     >
         <img
             src={IMG_CDN + movie.poster_path}

@@ -1,18 +1,33 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom';
 import { signOut } from "firebase/auth";
 import { auth } from "../utils/firebase";
 import { useSelector, useDispatch } from 'react-redux';
-import { setContentType } from '../utils/userSlice';
+import { setContentType, clearUser } from '../utils/userSlice';
 import { clearAll } from '../utils/movieSlice';
+import { NETFLIX_LOGO } from '../utils/constants';
 
 const Header = () => {
   const user = useSelector((state) => state.user.user);
   const contentType = useSelector((state) => state.user.contentType);
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const dispatch = useDispatch();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const isExplore = pathname === '/search';
+  const isMoviePage = pathname.startsWith('/movies/');
+  const isShowPage = pathname.startsWith('/shows/');
+
+  const isMoviesActive = isMoviePage || (!isExplore && !isShowPage && contentType === 'movie');
+  const isTVActive = isShowPage || (!isExplore && !isMoviePage && contentType === 'tv');
 
   const handleSignOut = () => {
+    if (user?.isGuest) {
+      dispatch(clearUser());
+      navigate('/', { replace: true });
+      return;
+    }
     signOut(auth).then(() => {
       console.log("User signed out successfully");
     }).catch((error) => {
@@ -28,35 +43,101 @@ const Header = () => {
   };
 
   return (
-    <div className="absolute top-0 left-0 w-full flex items-center justify-between p-4 z-20">
-        <div className="flex items-center gap-6">
-            <img onClick={() => navigate('/browse')} src="https://help.nflxext.com/helpcenter/OneTrust/oneTrust_production_2026-05-14/consent/87b6a5c0-0104-4e96-a291-092c11350111/019ae4b5-d8fb-7693-90ba-7a61d24a8837/logos/dd6b162f-1a32-456a-9cfe-897231c7763c/4345ea78-053c-46d2-b11e-09adaef973dc/Netflix_Logo_PMS.png" alt="netflix logo" className='w-48 drop-shadow-lg cursor-pointer' />
+    <div className="absolute top-0 left-0 w-full flex items-center justify-between px-3 py-3 md:p-4 z-20">
+        {/* Mobile: centered logo - phones only */}
+        <img
+            onClick={() => navigate('/browse')}
+            src={NETFLIX_LOGO}
+            alt="netflix logo"
+            className="md:hidden absolute left-1/2 -translate-x-1/2 w-24 drop-shadow-lg cursor-pointer"
+        />
+
+        <div className="flex items-center gap-3 md:gap-6">
+            {/* Mobile hamburger - phones only */}
             {user && (
-                <div className="flex gap-4">
-                    <button
-                        onClick={() => handleContentToggle('movie')}
-                        className={`text-sm md:text-lg font-semibold transition-colors ${
-                            contentType === 'movie' ? 'text-white' : 'text-gray-400 hover:text-gray-200'
-                        }`}
-                    >
-                        Movies
-                    </button>
-                    <button
-                        onClick={() => handleContentToggle('tv')}
-                        className={`text-sm md:text-lg font-semibold transition-colors ${
-                            contentType === 'tv' ? 'text-white' : 'text-gray-400 hover:text-gray-200'
-                        }`}
-                    >
-                        TV Shows
-                    </button>
-                </div>
+                <button
+                    onClick={() => setMenuOpen(!menuOpen)}
+                    className="md:hidden text-white text-2xl"
+                >
+                    {menuOpen ? '✕' : '☰'}
+                </button>
+            )}
+
+            {/* Desktop logo */}
+            <img
+                onClick={() => navigate('/browse')}
+                src={NETFLIX_LOGO}
+                alt="netflix logo"
+                className="w-48 drop-shadow-lg cursor-pointer hidden md:block"
+            />
+
+            {user && (
+                <>
+                    {/* Desktop nav */}
+                    <div className="hidden md:flex gap-4">
+                        <button
+                            onClick={() => handleContentToggle('movie')}
+                            className={`text-lg font-semibold transition-colors ${
+                                isMoviesActive ? 'text-white' : 'text-gray-400 hover:text-gray-200'
+                            }`}
+                        >
+                            Movies
+                        </button>
+                        <button
+                            onClick={() => handleContentToggle('tv')}
+                            className={`text-lg font-semibold transition-colors ${
+                                isTVActive ? 'text-white' : 'text-gray-400 hover:text-gray-200'
+                            }`}
+                        >
+                            TV Shows
+                        </button>
+                        <button
+                            onClick={() => navigate('/search')}
+                            className={`text-lg font-semibold transition-colors ${
+                                isExplore ? 'text-white' : 'text-gray-400 hover:text-gray-200'
+                            }`}
+                        >
+                            Explore
+                        </button>
+                    </div>
+
+                </>
             )}
         </div>
-        <div className='flex items-center gap-4'>
-          {user && <p className='text-white'>Welcome, {user.displayName || user.email}!</p>}
-          {user && <button className='bg-red-500 text-white rounded-md px-4 py-2' onClick={handleSignOut}>Sign Out</button>}
+        <div className='flex items-center gap-2 md:gap-4'>
+          {user && <p className='text-white text-xs md:text-base hidden md:block'>Welcome, {user.displayName || user.email}!</p>}
+          {user && !user.isGuest && <button className='bg-[#e50914] hover:bg-[#c11119] text-white rounded-md px-3 py-1.5 md:px-4 md:py-2 text-sm md:text-base transition-colors' onClick={handleSignOut}>Sign Out</button>}
         </div>
-        
+
+        {/* Mobile dropdown menu */}
+        {menuOpen && user && (
+            <div className="absolute top-full left-0 w-full bg-black/95 border-t border-zinc-800 md:hidden flex flex-col items-center gap-3 py-4">
+                <button
+                    onClick={() => { handleContentToggle('movie'); setMenuOpen(false); }}
+                    className={`text-base font-semibold transition-colors ${
+                        isMoviesActive ? 'text-white' : 'text-gray-400'
+                    }`}
+                >
+                    Movies
+                </button>
+                <button
+                    onClick={() => { handleContentToggle('tv'); setMenuOpen(false); }}
+                    className={`text-base font-semibold transition-colors ${
+                        isTVActive ? 'text-white' : 'text-gray-400'
+                    }`}
+                >
+                    TV Shows
+                </button>
+                <button
+                    onClick={() => { navigate('/search'); setMenuOpen(false); }}
+                    className={`text-base font-semibold transition-colors ${
+                        isExplore ? 'text-white' : 'text-gray-400'
+                    }`}
+                >
+                    Explore
+                </button>
+            </div>
+        )}
     </div>
   )
 }

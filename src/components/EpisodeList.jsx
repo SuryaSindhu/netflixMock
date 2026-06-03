@@ -38,9 +38,9 @@ const EpisodeList = ({ showId, numberOfSeasons }) => {
     }, [showId, selectedSeason]);
 
     return (
-        <div className="mt-10">
-            <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-white">Episodes</h2>
+        <div className="mt-8 md:mt-10">
+            <div className="flex items-center justify-between mb-3 md:mb-4">
+                <h2 className="text-xl md:text-2xl font-bold text-white">Episodes</h2>
 
                 {/* Custom Dropdown */}
                 <div className="relative" ref={dropdownRef}>

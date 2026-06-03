@@ -14,11 +14,11 @@ const MovieList = ({ title, movies }) => {
 
   return (
     <div
-      className="px-6 py-8 relative"
+      className="px-3 md:px-6 py-4 md:py-8 relative"
       onMouseEnter={() => setShowArrows(true)}
       onMouseLeave={() => setShowArrows(false)}
     >
-        <h2 className="text-xl md:text-2xl font-bold text-white py-2">{title}</h2>
+        <h2 className="text-lg md:text-2xl font-bold text-white py-1 md:py-2">{title}</h2>
         <div className="overflow-x-auto scrollbar-hide" ref={scrollRef}>
             <div className="flex gap-4 w-max">
                 {movies?.map((movie) => (
@@ -28,7 +28,7 @@ const MovieList = ({ title, movies }) => {
         </div>
 
         {showArrows && (
-          <>
+          <div className="hidden md:block">
             <button
               className="absolute left-0 top-1/2 -translate-y-1/2 bg-black bg-opacity-60 hover:bg-opacity-90 text-white text-5xl h-36 w-14 flex items-center justify-center rounded-r-md z-[60]"
               onClick={() => scroll('left')}
@@ -41,7 +41,7 @@ const MovieList = ({ title, movies }) => {
             >
               ›
             </button>
-          </>
+          </div>
         )}
     </div>
   )
