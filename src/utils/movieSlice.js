@@ -21,8 +21,14 @@ const movieSlice = createSlice({
         setUpcoming: (state, action) => {
             state.upcoming = action.payload;
         },
+        clearAll: (state) => {
+            state.nowPlaying = [];
+            state.popular = [];
+            state.topRated = [];
+            state.upcoming = [];
+        },
     }
 })
 
-export const { setNowPlaying, setPopular, setTopRated, setUpcoming } = movieSlice.actions;
+export const { setNowPlaying, setPopular, setTopRated, setUpcoming, clearAll } = movieSlice.actions;
 export default movieSlice.reducer;

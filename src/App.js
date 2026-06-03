@@ -4,6 +4,7 @@ import Login from './components/Login';
 import Browse from './components/Browse';
 import Header from './components/Header';
 import PlayPage from './components/PlayPage';
+import ShowPage from './components/ShowPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useEffect } from 'react';
 import { auth } from './utils/firebase';
@@ -66,8 +67,12 @@ export const appRouter = createBrowserRouter([
                 element: <ProtectedRoute><Browse /></ProtectedRoute>,
             },
             {
-                path: "/play/:movieId",
+                path: "/movies/:movieId",
                 element: <ProtectedRoute><PlayPage /></ProtectedRoute>,
+            },
+            {
+                path: "/shows/:movieId",
+                element: <ProtectedRoute><ShowPage /></ProtectedRoute>,
             }
         ]
     }

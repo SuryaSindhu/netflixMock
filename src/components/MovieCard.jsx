@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import MoviePopup from './MoviePopup';
 
 const IMG_CDN = "https://image.tmdb.org/t/p/w300";
@@ -8,6 +9,7 @@ const MovieCard = ({ movie }) => {
   const [isHovered, setIsHovered] = useState(false);
   const cardRef = useRef(null);
   const navigate = useNavigate();
+  const contentType = useSelector((state) => state.user.contentType);
 
   useEffect(() => {
     if (!isHovered) return;
@@ -35,7 +37,7 @@ const MovieCard = ({ movie }) => {
       className="w-36 md:w-48 flex-shrink-0 cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={() => navigate('/play/' + movie.id)}
+      onClick={() => navigate((contentType === 'tv' ? '/shows/' : '/movies/') + movie.id)}
     >
         <img
             src={IMG_CDN + movie.poster_path}

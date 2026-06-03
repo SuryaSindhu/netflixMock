@@ -4,6 +4,7 @@ const userSlice = createSlice({
     name: "user",
     initialState: {
         user: null,
+        contentType: 'movie',
     },
     reducers: {
         setUser: (state, action) => {
@@ -11,9 +12,12 @@ const userSlice = createSlice({
         },
         clearUser: (state) => { 
             state.user = null;
-        }       
+        },
+        setContentType: (state, action) => {
+            state.contentType = action.payload;
+        }
     }
 })
 
-export const { setUser, clearUser } = userSlice.actions;
+export const { setUser, clearUser, setContentType } = userSlice.actions;
 export default userSlice.reducer;

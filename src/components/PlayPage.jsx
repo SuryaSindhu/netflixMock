@@ -11,6 +11,7 @@ const PlayPage = () => {
     const [movie, setMovie] = useState(null);
     const [cast, setCast] = useState([]);
     const [trailerId, setTrailerId] = useState(null);
+    const [noVideo, setNoVideo] = useState(false);
     const [similar, setSimilar] = useState([]);
     const [recommendations, setRecommendations] = useState([]);
     const [genreMovies, setGenreMovies] = useState([]);
@@ -43,10 +44,20 @@ const PlayPage = () => {
         fetch(`https://api.themoviedb.org/3/movie/${movieId}/videos?language=en-US`, TMDB_OPTIONS)
             .then(res => res.json())
             .then(data => {
-                const trailer = data.results.find(v => v.type === 'Trailer' && v.site === 'YouTube');
-                if (trailer) setTrailerId(trailer.key);
+                const video = data.results.find(v => v.type === 'Trailer' && v.site === 'YouTube')
+                    || data.results.find(v => v.type === 'Teaser' && v.site === 'YouTube')
+                    || data.results.find(v => v.type === 'Clip' && v.site === 'YouTube')
+                    || data.results.find(v => v.site === 'YouTube');
+                if (video) {
+                    setTrailerId(video.key);
+                } else {
+                    setNoVideo(true);
+                }
             })
-            .catch(err => console.error(err));
+            .catch(err => {
+                console.error(err);
+                setNoVideo(true);
+            });
 
         fetch(`https://api.themoviedb.org/3/movie/${movieId}/similar?language=en-US&page=1`, TMDB_OPTIONS)
             .then(res => res.json())
@@ -72,6 +83,12 @@ const PlayPage = () => {
                         title="Movie Trailer"
                         allow="autoplay; encrypted-media"
                         allowFullScreen
+                    />
+                ) : noVideo && movie.backdrop_path ? (
+                    <img
+                        src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
+                        alt={movie.title}
+                        className="w-full aspect-video object-cover rounded"
                     />
                 ) : (
                     <div className="w-full aspect-video bg-zinc-900 flex items-center justify-center">
