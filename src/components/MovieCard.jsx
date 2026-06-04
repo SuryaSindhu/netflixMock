@@ -2,8 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import MoviePopup from './MoviePopup';
 import { useAppContext } from '../context/AppContext';
-
-const IMG_CDN = "https://image.tmdb.org/t/p/w300";
+import { IMG_CDN_W300 as IMG_CDN } from '../utils/constants';
 
 const MovieCard = ({ movie }) => {
   const [isHovered, setIsHovered] = useState(false);

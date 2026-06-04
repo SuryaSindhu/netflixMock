@@ -1,26 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom';
-import { TMDB_OPTIONS } from '../utils/constants';
+import { IMG_CDN_W500 as IMG_CDN } from '../utils/constants';
 import { ShowPageShimmer } from '../components/Shimmer';
 import MovieList from '../components/MovieList';
 import EpisodeList from '../components/EpisodeList';
 import TrailerPlayer from '../components/TrailerPlayer';
-
-const IMG_CDN = "https://image.tmdb.org/t/p/w500";
+import useShowDetails from '../hooks/useShowDetails';
 
 const ShowPage = () => {
-    const { movieId } = useParams();
+    const { showId } = useParams();
     const navigate = useNavigate();
-    const [show, setShow] = useState(null);
-    const [cast, setCast] = useState([]);
-    const [trailerId, setTrailerId] = useState(null);
-    const [noVideo, setNoVideo] = useState(false);
-    const [similar, setSimilar] = useState([]);
-    const [recommendations, setRecommendations] = useState([]);
-    const [genreShows, setGenreShows] = useState([]);
+    const { show, cast, trailerId, similar, recommendations, genreShows, contentRating, providers } = useShowDetails(showId);
     const [showTopBtn, setShowTopBtn] = useState(false);
-    const [contentRating, setContentRating] = useState(null);
-    const [providers, setProviders] = useState(null);
 
     useEffect(() => {
         const handleScroll = () => setShowTopBtn(window.scrollY > 600);
@@ -30,105 +21,7 @@ const ShowPage = () => {
 
     useEffect(() => {
         window.scrollTo(0, 0);
-    }, [movieId]);
-
-    useEffect(() => {
-        setTrailerId(null);
-        setNoVideo(false);
-
-        fetch(`https://api.themoviedb.org/3/tv/${movieId}?language=en-US`, TMDB_OPTIONS)
-            .then(res => res.json())
-            .then(data => {
-                setShow(data);
-                if (data.genres?.length > 0) {
-                    const genreIds = data.genres.map(g => g.id).join(',');
-                    fetch(`https://api.themoviedb.org/3/discover/tv?with_genres=${genreIds}&language=en-US&page=1&sort_by=popularity.desc`, TMDB_OPTIONS)
-                        .then(res => res.json())
-                        .then(res => setGenreShows((res.results?.filter(s => s.id !== data.id) || []).map(s => ({ ...s, media_type: 'tv' }))))
-                        .catch(err => console.error(err));
-                }
-            })
-            .catch(err => console.error(err));
-
-        // Try season 1 videos first, fallback to show-level videos
-        fetch(`https://api.themoviedb.org/3/tv/${movieId}/season/1/videos?language=en-US`, TMDB_OPTIONS)
-            .then(res => res.json())
-            .then(data => {
-                const video = data.results?.find(v => v.type === 'Trailer' && v.site === 'YouTube')
-                    || data.results?.find(v => v.type === 'Teaser' && v.site === 'YouTube')
-                    || data.results?.find(v => v.type === 'Clip' && v.site === 'YouTube')
-                    || data.results?.find(v => v.site === 'YouTube');
-                if (video) {
-                    setTrailerId(video.key);
-                } else {
-                    // Fallback to show-level videos
-                    fetch(`https://api.themoviedb.org/3/tv/${movieId}/videos?language=en-US`, TMDB_OPTIONS)
-                        .then(res => res.json())
-                        .then(data2 => {
-                            const vid = data2.results?.find(v => v.type === 'Trailer' && v.site === 'YouTube')
-                                || data2.results?.find(v => v.type === 'Teaser' && v.site === 'YouTube')
-                                || data2.results?.find(v => v.type === 'Clip' && v.site === 'YouTube')
-                                || data2.results?.find(v => v.site === 'YouTube');
-                            if (vid) {
-                                setTrailerId(vid.key);
-                            } else {
-                                setNoVideo(true);
-                            }
-                        })
-                        .catch(() => setNoVideo(true));
-                }
-            })
-            .catch(() => {
-                // If season 1 videos endpoint fails, try show-level
-                fetch(`https://api.themoviedb.org/3/tv/${movieId}/videos?language=en-US`, TMDB_OPTIONS)
-                    .then(res => res.json())
-                    .then(data2 => {
-                        const vid = data2.results?.find(v => v.type === 'Trailer' && v.site === 'YouTube')
-                            || data2.results?.find(v => v.type === 'Teaser' && v.site === 'YouTube')
-                            || data2.results?.find(v => v.type === 'Clip' && v.site === 'YouTube')
-                            || data2.results?.find(v => v.site === 'YouTube');
-                        if (vid) {
-                            setTrailerId(vid.key);
-                        } else {
-                            setNoVideo(true);
-                        }
-                    })
-                    .catch(() => setNoVideo(true));
-            });
-
-        fetch(`https://api.themoviedb.org/3/tv/${movieId}/credits?language=en-US`, TMDB_OPTIONS)
-            .then(res => res.json())
-            .then(data => setCast(data.cast || []))
-            .catch(err => console.error(err));
-
-        fetch(`https://api.themoviedb.org/3/tv/${movieId}/similar?language=en-US&page=1`, TMDB_OPTIONS)
-            .then(res => res.json())
-            .then(data => setSimilar((data.results || []).map(s => ({ ...s, media_type: 'tv' }))))
-            .catch(err => console.error(err));
-
-        fetch(`https://api.themoviedb.org/3/tv/${movieId}/recommendations?language=en-US&page=1`, TMDB_OPTIONS)
-            .then(res => res.json())
-            .then(data => setRecommendations((data.results || []).map(s => ({ ...s, media_type: 'tv' }))))
-            .catch(err => console.error(err));
-
-        fetch(`https://api.themoviedb.org/3/tv/${movieId}/content_ratings`, TMDB_OPTIONS)
-            .then(res => res.json())
-            .then(data => {
-                const india = data.results?.find(r => r.iso_3166_1 === 'IN');
-                const us = data.results?.find(r => r.iso_3166_1 === 'US');
-                const entry = india || us;
-                if (entry?.rating) setContentRating(entry.rating);
-            })
-            .catch(err => console.error(err));
-
-        fetch(`https://api.themoviedb.org/3/tv/${movieId}/watch/providers`, TMDB_OPTIONS)
-            .then(res => res.json())
-            .then(data => {
-                const region = data.results?.IN || data.results?.US;
-                if (region) setProviders(region);
-            })
-            .catch(err => console.error(err));
-    }, [movieId]);
+    }, [showId]);
 
     if (!show) return <ShowPageShimmer />;
 
@@ -303,7 +196,7 @@ const ShowPage = () => {
 
                     {/* Episodes Section */}
                     {show.number_of_seasons > 0 && (
-                        <EpisodeList showId={movieId} numberOfSeasons={show.number_of_seasons} />
+                        <EpisodeList showId={showId} numberOfSeasons={show.number_of_seasons} />
                     )}
 
                     {/* Show Lists */}
@@ -492,7 +385,7 @@ const ShowPage = () => {
 
                 {/* Episodes Section */}
                 {show.number_of_seasons > 0 && (
-                    <EpisodeList showId={movieId} numberOfSeasons={show.number_of_seasons} />
+                    <EpisodeList showId={showId} numberOfSeasons={show.number_of_seasons} />
                 )}
 
                 {/* Show Lists */}

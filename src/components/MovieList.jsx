@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import MovieCard from './MovieCard';
 
 const MovieListShimmer = () => (
@@ -14,7 +14,18 @@ const MovieListShimmer = () => (
 
 const MovieList = ({ title, movies }) => {
   const [showArrows, setShowArrows] = useState(false);
+  const [canScroll, setCanScroll] = useState(false);
   const scrollRef = useRef(null);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const checkOverflow = () => setCanScroll(el.scrollWidth > el.clientWidth);
+    checkOverflow();
+    const observer = new ResizeObserver(checkOverflow);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [movies]);
 
   if (!movies || movies.length === 0) return <MovieListShimmer />;
 
@@ -40,7 +51,7 @@ const MovieList = ({ title, movies }) => {
             </div>
         </div>
 
-        {showArrows && (
+        {showArrows && canScroll && (
           <div className="hidden md:block">
             <button
               className="absolute left-0 top-1/2 -translate-y-1/2 bg-black bg-opacity-60 hover:bg-opacity-90 text-white text-5xl h-36 w-14 flex items-center justify-center rounded-r-md z-[60]"

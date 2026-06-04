@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-
-const IMG_CDN = "https://image.tmdb.org/t/p/w300";
+import { IMG_CDN_W300 as IMG_CDN } from '../utils/constants';
 
 const EpisodeCard = ({ episode }) => {
     const [expanded, setExpanded] = useState(false);

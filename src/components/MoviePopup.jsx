@@ -1,27 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { useNavigate } from 'react-router-dom';
-import { TMDB_OPTIONS } from '../utils/constants';
+import { IMG_CDN_W300 as IMG_CDN } from '../utils/constants';
 import { useAppContext } from '../context/AppContext';
-
-const IMG_CDN = "https://image.tmdb.org/t/p/w300";
+import usePopupDetails from '../hooks/usePopupDetails';
 
 const MoviePopup = ({ movie, position, onClose }) => {
-    const [details, setDetails] = useState(null);
     const navigate = useNavigate();
     const { contentType } = useAppContext();
 
     const isTV = movie.media_type === 'tv' || (!movie.media_type && contentType === 'tv');
-
-    useEffect(() => {
-        const endpoint = isTV
-            ? `https://api.themoviedb.org/3/tv/${movie.id}?language=en-US`
-            : `https://api.themoviedb.org/3/movie/${movie.id}?language=en-US`;
-
-        fetch(endpoint, TMDB_OPTIONS)
-            .then(res => res.json())
-            .then(data => setDetails(data))
-            .catch(err => console.error(err));
-    }, [movie.id, isTV]);
+    const details = usePopupDetails(movie.id, isTV);
 
     const title = movie.title || movie.name;
     const runtime = !isTV

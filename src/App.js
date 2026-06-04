@@ -52,7 +52,7 @@ export const appRouter = createBrowserRouter([
                 element: <ProtectedRoute><PlayPage /></ProtectedRoute>,
             },
             {
-                path: "/shows/:movieId",
+                path: "/shows/:showId",
                 element: <ProtectedRoute><ShowPage /></ProtectedRoute>,
             },
             {
