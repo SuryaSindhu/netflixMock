@@ -2,12 +2,11 @@ import React from "react";
 import VideoBG from "./VideoBG";
 import VideoInfo from "./VideoInfo";
 import MobileHero from "./MobileHero";
-import { useSelector } from "react-redux";
+import { useAppContext } from "../../context/AppContext";
 
-const MainContainer = () => {
-    const nowPlayingMovies = useSelector((state) => state.movies.nowPlaying);
-    const contentType = useSelector((state) => state.user.contentType);
-    const firstItem = nowPlayingMovies[0];
+const MainContainer = ({ nowPlaying }) => {
+    const { contentType } = useAppContext();
+    const firstItem = nowPlaying[0];
 
     if (!firstItem) return null;
 

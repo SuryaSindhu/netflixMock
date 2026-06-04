@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import MoviePopup from './MoviePopup';
+import { useAppContext } from '../context/AppContext';
 
 const IMG_CDN = "https://image.tmdb.org/t/p/w300";
 
@@ -9,7 +9,7 @@ const MovieCard = ({ movie }) => {
   const [isHovered, setIsHovered] = useState(false);
   const cardRef = useRef(null);
   const navigate = useNavigate();
-  const contentType = useSelector((state) => state.user.contentType);
+  const { contentType } = useAppContext();
 
   useEffect(() => {
     if (!isHovered) return;

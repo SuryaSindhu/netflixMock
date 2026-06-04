@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { TMDB_OPTIONS } from "../utils/constants";
+import { TMDB_OPTIONS } from "../../utils/constants";
+import { useAppContext } from "../../context/AppContext";
 
 const MobileHero = ({ movie }) => {
     const navigate = useNavigate();
-    const contentType = useSelector((state) => state.user.contentType);
+    const { contentType } = useAppContext();
     const path = (contentType === "tv" ? "/shows/" : "/movies/") + movie.id;
     const [genres, setGenres] = useState([]);
 

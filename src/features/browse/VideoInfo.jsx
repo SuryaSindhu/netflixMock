@@ -1,10 +1,10 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useAppContext } from "../../context/AppContext";
 
 const VideoInfo = ({ title, overview, movieId }) => {
     const navigate = useNavigate();
-    const contentType = useSelector((state) => state.user.contentType);
+    const { contentType } = useAppContext();
     const path = (contentType === 'tv' ? '/shows/' : '/movies/') + movieId;
 
     const trimmedOverview = overview && overview.length > 300

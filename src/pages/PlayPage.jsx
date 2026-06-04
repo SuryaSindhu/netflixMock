@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom';
 import { TMDB_OPTIONS } from '../utils/constants';
-import { PlayPageShimmer } from './Shimmer';
-import MovieList from './MovieList';
-import TrailerPlayer from './TrailerPlayer';
+import { PlayPageShimmer } from '../components/Shimmer';
+import MovieList from '../components/MovieList';
+import TrailerPlayer from '../components/TrailerPlayer';
 
 const IMG_CDN = "https://image.tmdb.org/t/p/w500";
 

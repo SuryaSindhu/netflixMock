@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { validateData } from "../utils/validations";
 import {auth} from "../utils/firebase";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { useDispatch } from "react-redux";
-import { setUser } from "../utils/userSlice";
+import { useAppContext } from "../context/AppContext";
 import { NETFLIX_BG } from "../utils/constants";
 
 const getFirebaseError = (errorCode) => {
@@ -36,7 +35,7 @@ const Login = () => {
     const password = React.useRef();
     const userName = React.useRef();
     const [error, setError] = React.useState(null);
-    const dispatch = useDispatch();
+    const { setUser } = useAppContext();
     const navigate = useNavigate();
 
     const toggleLogin = () => {
@@ -45,7 +44,7 @@ const Login = () => {
 
     const handleGuestLogin = (e) => {
         e.preventDefault();
-        dispatch(setUser({ uid: 'guest', email: 'guest@netflix.com', displayName: 'Guest', isGuest: true }));
+        setUser({ uid: 'guest', email: 'guest@netflix.com', displayName: 'Guest', isGuest: true });
         navigate('/browse', { replace: true });
     };
 
@@ -81,7 +80,7 @@ const Login = () => {
                         displayName: userName.current.value
                             }).then(() => {
                             const { uid, email, displayName } = auth.currentUser;
-                            dispatch(setUser({ uid, email, displayName }));
+                            setUser({ uid, email, displayName });
                             }).catch((error) => {
                             setError(getFirebaseError(error.code));
                         });

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { TMDB_OPTIONS } from '../utils/constants';
-import MovieList from './MovieList';
+import { TMDB_OPTIONS } from '../../utils/constants';
+import MovieList from '../../components/MovieList';
 
 const GenreSearch = () => {
     const [movieGenres, setMovieGenres] = useState([]);

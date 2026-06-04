@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { TMDB_OPTIONS } from '../utils/constants';
+import { TMDB_OPTIONS } from '../../utils/constants';
 
 const VideoBG = ({ movieId, contentType = 'movie', backdropPath }) => {
     const [trailerId, setTrailerId] = useState(null);

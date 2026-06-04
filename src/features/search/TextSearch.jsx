@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TMDB_OPTIONS } from '../utils/constants';
-import MovieList from './MovieList';
+import { TMDB_OPTIONS } from '../../utils/constants';
+import MovieList from '../../components/MovieList';
 
 const TextSearch = () => {
     const [query, setQuery] = useState('');

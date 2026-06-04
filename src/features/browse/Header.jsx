@@ -1,18 +1,14 @@
 import React, { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom';
 import { signOut } from "firebase/auth";
-import { auth } from "../utils/firebase";
-import { useSelector, useDispatch } from 'react-redux';
-import { setContentType, clearUser } from '../utils/userSlice';
-import { clearAll } from '../utils/movieSlice';
-import { NETFLIX_LOGO } from '../utils/constants';
+import { auth } from "../../utils/firebase";
+import { NETFLIX_LOGO } from '../../utils/constants';
+import { useAppContext } from '../../context/AppContext';
 
 const Header = () => {
-  const user = useSelector((state) => state.user.user);
-  const contentType = useSelector((state) => state.user.contentType);
+  const { user, clearUser, contentType, setContentType } = useAppContext();
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const dispatch = useDispatch();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const isExplore = pathname === '/search';
@@ -24,7 +20,7 @@ const Header = () => {
 
   const handleSignOut = () => {
     if (user?.isGuest) {
-      dispatch(clearUser());
+      clearUser();
       navigate('/', { replace: true });
       return;
     }
@@ -37,8 +33,7 @@ const Header = () => {
 
   const handleContentToggle = (type) => {
     if (type === contentType) return;
-    dispatch(clearAll());
-    dispatch(setContentType(type));
+    setContentType(type);
     navigate('/browse');
   };
 

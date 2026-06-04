@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import { TMDB_OPTIONS } from '../utils/constants';
+import { useAppContext } from '../context/AppContext';
 
 const IMG_CDN = "https://image.tmdb.org/t/p/w300";
 
 const MoviePopup = ({ movie, position, onClose }) => {
     const [details, setDetails] = useState(null);
     const navigate = useNavigate();
-    const contentType = useSelector((state) => state.user.contentType);
+    const { contentType } = useAppContext();
 
     const isTV = movie.media_type === 'tv' || (!movie.media_type && contentType === 'tv');
 

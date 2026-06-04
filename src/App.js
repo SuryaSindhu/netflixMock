@@ -1,41 +1,21 @@
-import { createBrowserRouter, Outlet, useNavigate, useLocation } from 'react-router-dom'
+import { createBrowserRouter, Outlet, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion';
-import Login from './components/Login';
-import Browse from './components/Browse';
-import Header from './components/Header';
-import PlayPage from './components/PlayPage';
-import ShowPage from './components/ShowPage';
-import PersonPage from './components/PersonPage';
-import SearchPage from './components/SearchPage';
+import Login from './pages/Login';
+import Browse from './pages/Browse';
+import Header from './features/browse/Header';
+import PlayPage from './pages/PlayPage';
+import ShowPage from './pages/ShowPage';
+import PersonPage from './pages/PersonPage';
+import SearchPage from './pages/SearchPage';
 import ProtectedRoute from './components/ProtectedRoute';
-import { useEffect } from 'react';
-import { auth } from './utils/firebase';
-import { onAuthStateChanged } from 'firebase/auth';
-import { useDispatch } from 'react-redux';
-import { setUser, clearUser } from './utils/userSlice';
+import { AppProvider } from './context/AppContext';
 
 
 function App() {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
     const location = useLocation();
 
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if (user) {
-                const { uid, email, displayName } = auth.currentUser;
-                dispatch(setUser({ uid, email, displayName }));
-                if (window.location.pathname === '/') navigate("/browse", { replace: true });
-            } else {
-                // User is signed out
-                dispatch(clearUser());
-                navigate("/", { replace: true });
-            }
-            });
-        return () => unsubscribe();
-    }, []);
-
     return (
+        <AppProvider>
             <div className="App">
                 <Header />
                 <AnimatePresence mode="popLayout">
@@ -50,6 +30,7 @@ function App() {
                     </motion.div>
                 </AnimatePresence>
             </div>
+        </AppProvider>
 );
 }
 

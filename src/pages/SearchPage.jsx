@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import TextSearch from './TextSearch';
-import GenreSearch from './GenreSearch';
+import TextSearch from '../features/search/TextSearch';
+import GenreSearch from '../features/search/GenreSearch';
 import { NETFLIX_BG } from '../utils/constants';
 
 const SearchPage = () => {

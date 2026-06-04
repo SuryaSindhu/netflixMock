@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { TMDB_OPTIONS } from '../utils/constants';
-import { PersonPageShimmer } from './Shimmer';
-import MovieList from './MovieList';
+import { PersonPageShimmer } from '../components/Shimmer';
+import MovieList from '../components/MovieList';
 
 const IMG_CDN = "https://image.tmdb.org/t/p/w500";
 
