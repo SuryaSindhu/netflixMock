@@ -1,14 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { TMDB_OPTIONS } from '../../utils/constants';
 import MovieList from '../../components/MovieList';
+import { useAppContext } from '../../context/AppContext';
 
 const GenreSearch = () => {
+    const { searchCache, setSearchCache } = useAppContext();
     const [movieGenres, setMovieGenres] = useState([]);
     const [tvGenres, setTvGenres] = useState([]);
-    const [selectedGenres, setSelectedGenres] = useState([]);
-    const [results, setResults] = useState([]);
+    const [selectedGenres, setSelectedGenres] = useState(searchCache.selectedGenres);
+    const [results, setResults] = useState(searchCache.genreResults);
     const [loading, setLoading] = useState(false);
-    const [searched, setSearched] = useState(false);
+    const [searched, setSearched] = useState(searchCache.genreSearched);
+    const resultsRef = useRef(null);
+
+    // Save to cache whenever genre state changes
+    useEffect(() => {
+        setSearchCache(prev => ({ ...prev, selectedGenres, genreResults: results, genreSearched: searched }));
+    }, [selectedGenres, results, searched, setSearchCache]);
 
     // Fetch genre lists
     useEffect(() => {
@@ -58,50 +66,50 @@ const GenreSearch = () => {
 
         setLoading(true);
         setSearched(true);
+
+        // On mobile, scroll to results area immediately so loader is visible
+        if (window.innerWidth < 768) {
+            setTimeout(() => {
+                resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 50);
+        }
         const combos = getCombinations(selectedGenres);
-        const allResults = [];
         const seenMovieIds = new Set();
         const seenTvIds = new Set();
 
-        for (const combo of combos) {
+        // Fire all fetches in parallel
+        const comboPromises = combos.map(async (combo) => {
             const genreIds = combo.map(g => g.id).join(',');
             const genreLabel = combo.map(g => g.name).join(' & ');
 
             try {
-                // Fetch movies
-                const movieRes = await fetch(
-                    `https://api.themoviedb.org/3/discover/movie?with_genres=${genreIds}&language=en-US&page=1&sort_by=popularity.desc`,
-                    TMDB_OPTIONS
-                );
-                const movieData = await movieRes.json();
+                const [movieRes, tvRes] = await Promise.all([
+                    fetch(`https://api.themoviedb.org/3/discover/movie?with_genres=${genreIds}&language=en-US&page=1&sort_by=popularity.desc`, TMDB_OPTIONS),
+                    fetch(`https://api.themoviedb.org/3/discover/tv?with_genres=${genreIds}&language=en-US&page=1&sort_by=popularity.desc`, TMDB_OPTIONS),
+                ]);
+
+                const [movieData, tvData] = await Promise.all([movieRes.json(), tvRes.json()]);
+
                 const movies = (movieData.results || [])
                     .filter(m => m.poster_path && !seenMovieIds.has(m.id))
                     .map(m => ({ ...m, media_type: 'movie' }));
                 movies.forEach(m => seenMovieIds.add(m.id));
 
-                // Fetch TV
-                const tvRes = await fetch(
-                    `https://api.themoviedb.org/3/discover/tv?with_genres=${genreIds}&language=en-US&page=1&sort_by=popularity.desc`,
-                    TMDB_OPTIONS
-                );
-                const tvData = await tvRes.json();
                 const shows = (tvData.results || [])
                     .filter(s => s.poster_path && !seenTvIds.has(s.id))
                     .map(s => ({ ...s, media_type: 'tv' }));
                 shows.forEach(s => seenTvIds.add(s.id));
 
                 if (movies.length > 0 || shows.length > 0) {
-                    allResults.push({
-                        label: genreLabel,
-                        matchCount: combo.length,
-                        movies,
-                        shows,
-                    });
+                    return { label: genreLabel, matchCount: combo.length, movies, shows };
                 }
             } catch (err) {
                 console.error(err);
             }
-        }
+            return null;
+        });
+
+        const allResults = (await Promise.all(comboPromises)).filter(Boolean);
 
         setResults(allResults);
         setLoading(false);
@@ -144,10 +152,10 @@ const GenreSearch = () => {
 
                 {/* Selected + Discover button */}
                 {selectedGenres.length > 0 && (
-                    <div className="flex items-center justify-center gap-4 mt-5">
-                        <div className="flex gap-2">
+                    <div className="flex flex-wrap items-center justify-center gap-2 md:gap-4 mt-5">
+                        <div className="flex flex-wrap justify-center gap-2">
                             {selectedGenres.map(g => (
-                                <span key={g.id} className="bg-red-600/20 border border-red-600 text-red-400 px-3 py-1 rounded-full text-sm flex items-center gap-1">
+                                <span key={g.id} className="bg-red-600/20 border border-red-600 text-red-400 px-3 py-1 rounded-full text-sm flex items-center gap-1 whitespace-nowrap">
                                     {g.name}
                                     <button onClick={() => toggleGenre(g)} className="text-red-300 hover:text-white ml-1">×</button>
                                 </span>
@@ -159,10 +167,18 @@ const GenreSearch = () => {
                         >
                             Discover
                         </button>
+                        <button
+                            onClick={() => { setSelectedGenres([]); setResults([]); setSearched(false); }}
+                            className="bg-zinc-800 hover:bg-zinc-700 text-gray-300 hover:text-white px-4 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer border border-zinc-700"
+                        >
+                            Clear All
+                        </button>
                     </div>
                 )}
             </div>
 
+            {/* Results area (ref wraps loader + results for scroll target) */}
+            <div ref={resultsRef}>
             {/* Loading */}
             {loading && (
                 <div className="text-center text-gray-400 py-8">
@@ -200,6 +216,7 @@ const GenreSearch = () => {
                     <p className="text-sm mt-2">Try different genres</p>
                 </div>
             )}
+            </div>
 
             {/* Empty state */}
             {!searched && !loading && (

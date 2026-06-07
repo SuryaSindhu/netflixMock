@@ -2,14 +2,21 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TMDB_OPTIONS } from '../../utils/constants';
 import MovieList from '../../components/MovieList';
+import { useAppContext } from '../../context/AppContext';
 
 const TextSearch = () => {
-    const [query, setQuery] = useState('');
-    const [movieResults, setMovieResults] = useState([]);
-    const [tvResults, setTvResults] = useState([]);
-    const [personResults, setPersonResults] = useState([]);
+    const { searchCache, setSearchCache } = useAppContext();
+    const [query, setQuery] = useState(searchCache.query);
+    const [movieResults, setMovieResults] = useState(searchCache.movieResults);
+    const [tvResults, setTvResults] = useState(searchCache.tvResults);
+    const [personResults, setPersonResults] = useState(searchCache.personResults);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+
+    // Save to cache whenever results change
+    useEffect(() => {
+        setSearchCache(prev => ({ ...prev, query, movieResults, tvResults, personResults }));
+    }, [query, movieResults, tvResults, personResults, setSearchCache]);
 
     const debounce = (func, delay) => {
         let timer;

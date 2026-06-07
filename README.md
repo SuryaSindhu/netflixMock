@@ -6,18 +6,66 @@ A responsive Netflix-inspired web app built with React. Browse movies and TV sho
 
 ## Features
 
-- Authentication (sign up, sign in, guest login) via Firebase
-- Browse movies and TV shows with category toggle
-- Auto-playing trailer backgrounds on desktop
-- Mobile-optimized hero with poster layout
-- Hover popups with movie details and ratings
-- Full movie/show detail pages with trailers and recommendations
-- Text search and genre-based discovery
-- Episode lists for TV shows
-- Person/actor pages with filmography
-- Shimmer loading states throughout
-- Fully responsive (mobile, tablet, desktop)
-- Route protection for authenticated users
+### Login Page
+
+- Sign In / Sign Up toggle with form validation
+- Firebase Authentication (email + password)
+- Guest login option (bypasses auth)
+- Friendly error messages for 13+ Firebase error codes (invalid email, wrong password, too many attempts, etc.)
+- Full-screen Netflix background with dark overlay form
+
+### Browse Page
+
+- **Header:** Netflix logo, Movies / TV Shows / Explore navigation, hamburger menu on mobile, user greeting + Sign Out
+- **Desktop Hero:** Auto-playing YouTube trailer background for the first movie/show, with title, truncated overview, Play and More Info buttons
+- **Mobile Hero:** Gradient poster layout with genre pills, Play and Info buttons
+- **Category Lists:** Horizontally scrollable rows — Now Playing, Trending, Popular, Top Rated, Upcoming (labels adapt for Movies vs TV Shows)
+- **Scroll Arrows:** Appear on hover, smooth scroll ±400px, auto-hidden on mobile
+- **Content Toggle:** Switch between Movies and TV Shows from the header — all lists update accordingly
+
+### Movie Detail Page (`/movies/:id`)
+
+- Embedded YouTube trailer with custom mute/unmute and fullscreen controls (falls back to backdrop or poster)
+- Movie info: title, tagline, color-coded rating (green/yellow/red), year, runtime, certification
+- Genre pills, overview, quick facts (studio, language, budget, revenue, status)
+- Watch provider logos (streaming, rent, buy)
+- Scrollable cast row (20 actors) — click to visit actor's page
+- Related movie lists: Similar, Recommendations, More in same genres
+
+### Show Detail Page (`/shows/:id`)
+
+- Same layout as Movie Detail Page, adapted for TV shows (seasons, episodes, content rating)
+- **Episode Browser:** Custom season dropdown, episode cards with thumbnails, runtime, air date, expandable overview
+- "Load More" pagination for long episode lists (15 at a time)
+- Tries season-level trailer first, falls back to show-level
+
+### Person Page (`/person/:id`)
+
+- Profile photo, name, known-for department, birthday (with calculated age), birthplace, deathday
+- Expandable biography (collapses after 400 characters)
+- Quick stats: number of movies, TV shows, popularity score
+- Filmography split into Movies and TV Shows rows
+
+### Search Page (`/search`)
+
+- **Text Search tab:** Debounced search input (500ms), searches movies, TV shows, and people simultaneously via TMDB multi-search
+- **Genre Mix tab:** Select up to 3 genres, discover content matching all combinations (all selected, pairs, singles) — results deduplicated and grouped
+- Search results cached in context (preserved when switching tabs or navigating back)
+- People results shown as circular portraits with name and department
+
+### 404 Page
+
+- "Lost your way?" message with a link back to Browse
+
+### Cross-Cutting
+
+- **Route Protection:** All pages except Login require authentication — redirects to Login if not signed in
+- **Responsive Design:** Mobile-first, adapts at the `md` (768px) breakpoint — hamburger nav, stacked layouts, hidden scroll arrows on mobile
+- **Hover Popups:** Desktop-only popups on movie cards showing rating, runtime/seasons, genres, and overview (positioned relative to card)
+- **Shimmer Loading:** Skeleton loaders for every page (Browse, Movie, Show, Person, Search) matching the final layout
+- **Page Transitions:** Framer Motion fade in/out on route changes
+- **Error Boundary:** Catches React crashes with a friendly fallback and home button
+- **Dark Theme:** Netflix-inspired black/zinc palette with red (#e50914) accents throughout
 
 ## Tech Stack
 

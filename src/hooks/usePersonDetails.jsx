@@ -7,12 +7,20 @@ const usePersonDetails = (personId) => {
     const [tvCredits, setTvCredits] = useState([]);
 
     useEffect(() => {
-        fetch(`https://api.themoviedb.org/3/person/${personId}?language=en-US`, TMDB_OPTIONS)
+        const controller = new AbortController();
+        const { signal } = controller;
+        const options = { ...TMDB_OPTIONS, signal };
+
+        setPerson(null);
+        setMovieCredits([]);
+        setTvCredits([]);
+
+        fetch(`https://api.themoviedb.org/3/person/${personId}?language=en-US`, options)
             .then(res => res.json())
             .then(data => setPerson(data))
-            .catch(err => console.error(err));
+            .catch(err => { if (err.name !== 'AbortError') console.error(err); });
 
-        fetch(`https://api.themoviedb.org/3/person/${personId}/combined_credits?language=en-US`, TMDB_OPTIONS)
+        fetch(`https://api.themoviedb.org/3/person/${personId}/combined_credits?language=en-US`, options)
             .then(res => res.json())
             .then(data => {
                 const movies = (data.cast || [])
@@ -24,7 +32,9 @@ const usePersonDetails = (personId) => {
                 setMovieCredits(movies);
                 setTvCredits(tv);
             })
-            .catch(err => console.error(err));
+            .catch(err => { if (err.name !== 'AbortError') console.error(err); });
+
+        return () => controller.abort();
     }, [personId]);
 
     return { person, movieCredits, tvCredits };

@@ -7,7 +7,9 @@ import PlayPage from './pages/PlayPage';
 import ShowPage from './pages/ShowPage';
 import PersonPage from './pages/PersonPage';
 import SearchPage from './pages/SearchPage';
+import NotFound from './pages/NotFound';
 import ProtectedRoute from './components/ProtectedRoute';
+import ErrorBoundary from './components/ErrorBoundary';
 import { AppProvider } from './context/AppContext';
 
 
@@ -16,6 +18,7 @@ function App() {
 
     return (
         <AppProvider>
+            <ErrorBoundary>
             <div className="App">
                 <Header />
                 <AnimatePresence mode="popLayout">
@@ -30,6 +33,7 @@ function App() {
                     </motion.div>
                 </AnimatePresence>
             </div>
+            </ErrorBoundary>
         </AppProvider>
 );
 }
@@ -62,6 +66,10 @@ export const appRouter = createBrowserRouter([
             {
                 path: "/search",
                 element: <ProtectedRoute><SearchPage /></ProtectedRoute>,
+            },
+            {
+                path: "*",
+                element: <NotFound />,
             }
         ]
     }

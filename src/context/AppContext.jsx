@@ -8,9 +8,21 @@ const AppContext = createContext(null);
 export const AppProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [contentType, setContentType] = useState('movie');
+    const [searchCache, setSearchCache] = useState({
+        query: '',
+        movieResults: [],
+        tvResults: [],
+        personResults: [],
+        selectedGenres: [],
+        genreResults: [],
+        genreSearched: false,
+    });
     const navigate = useNavigate();
 
-    const clearUser = () => setUser(null);
+    const clearUser = () => {
+        setUser(null);
+        setSearchCache({ query: '', movieResults: [], tvResults: [], personResults: [], selectedGenres: [], genreResults: [], genreSearched: false });
+    };
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -27,7 +39,7 @@ export const AppProvider = ({ children }) => {
     }, []);
 
     return (
-        <AppContext.Provider value={{ user, setUser, clearUser, contentType, setContentType }}>
+        <AppContext.Provider value={{ user, setUser, clearUser, contentType, setContentType, searchCache, setSearchCache }}>
             {children}
         </AppContext.Provider>
     );
