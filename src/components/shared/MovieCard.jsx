@@ -45,7 +45,7 @@ const MovieCard = ({ movie }) => {
     >
         <img
             src={IMG_CDN + movie.poster_path}
-            alt={movie.title}
+            alt={movie.title || movie.name}
             className="w-full rounded-md"
         />
         {isHovered && <MoviePopup movie={movie} position={getCardCenter()} onClose={() => setIsHovered(false)} />}

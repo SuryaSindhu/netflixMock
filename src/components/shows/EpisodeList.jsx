@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { TMDB_OPTIONS, TMDB_BASE_URL } from '../utils/constants';
+import { TMDB_OPTIONS, TMDB_BASE_URL } from '../../utils/constants';
 import EpisodeCard from './EpisodeCard';
-import { EpisodeListShimmer } from './shared/Shimmer';
+import { EpisodeListShimmer } from '../shared/Shimmer';
 
 const EpisodeList = ({ showId, numberOfSeasons }) => {
     const [selectedSeason, setSelectedSeason] = useState(1);

@@ -40,6 +40,10 @@ const Login = () => {
 
     const toggleLogin = () => {
         setIsLogin(!isLogin);
+        setError(null);
+        email.current.value = '';
+        password.current.value = '';
+        if (userName.current) userName.current.value = '';
     };
 
     const handleGuestLogin = (e) => {

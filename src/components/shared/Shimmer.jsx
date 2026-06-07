@@ -1,6 +1,6 @@
 import React from 'react';
 
-// ─── Tiny reusable building blocks (internal only) ───
+// ─── reusable building blocks  ───
 
 const CardRow = ({ count = 8, mobile }) => (
     <div className={`flex ${mobile ? 'gap-2' : 'gap-4'} overflow-hidden`}>
@@ -30,8 +30,10 @@ const TextBlock = ({ lines = 3 }) => (
     </div>
 );
 
+const gridColsMap = { 2: 'grid-cols-2', 3: 'grid-cols-3', 4: 'grid-cols-4' };
+
 const InfoGrid = ({ count = 4, cols = 2 }) => (
-    <div className={`grid grid-cols-${cols} gap-3`}>
+    <div className={`grid ${gridColsMap[cols]} gap-3`}>
         {[...Array(count)].map((_, i) => (
             <div key={i} className="h-16 bg-zinc-800/50 rounded-xl" />
         ))}
@@ -239,25 +241,6 @@ export const PersonPageShimmer = () => (
                     <div key={row}><TitleRow /><CardRow /></div>
                 ))}
             </div>
-        </div>
-    </div>
-);
-
-export const SearchPageShimmer = () => (
-    <div className="bg-black min-h-screen animate-pulse">
-        {/* Mobile */}
-        <div className="md:hidden pt-20 px-4 space-y-4">
-            <div className="h-11 w-full bg-zinc-800 rounded-lg" />
-            <div className="grid grid-cols-3 gap-2 mt-4">
-                {[...Array(9)].map((_, i) => <div key={i} className="aspect-[2/3] bg-zinc-800 rounded-md" />)}
-            </div>
-        </div>
-        {/* Desktop */}
-        <div className="hidden md:block pt-28 px-12 space-y-6">
-            <div className="h-14 max-w-2xl mx-auto bg-zinc-800 rounded-lg" />
-            {[1, 2].map(row => (
-                <div key={row}><TitleRow /><CardRow /></div>
-            ))}
         </div>
     </div>
 );

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { IMG_CDN_W300 as IMG_CDN } from '../utils/constants';
+import { IMG_CDN_W300 as IMG_CDN } from '../../utils/constants';
 
 const EpisodeCard = ({ episode }) => {
     const [expanded, setExpanded] = useState(false);
