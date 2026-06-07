@@ -1,8 +1,8 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
-import { IMG_CDN_W300 as IMG_CDN } from '../utils/constants';
-import { useAppContext } from '../context/AppContext';
-import usePopupDetails from '../hooks/usePopupDetails';
+import { IMG_CDN_W300 as IMG_CDN, getRatingStyle } from '../../utils/constants';
+import { useAppContext } from '../../context/AppContext';
+import usePopupDetails from '../../hooks/usePopupDetails';
 
 const MoviePopup = ({ movie, position, onClose }) => {
     const navigate = useNavigate();
@@ -34,7 +34,7 @@ const MoviePopup = ({ movie, position, onClose }) => {
                 <h3 className="text-white font-bold text-xs">{title}</h3>
                 <div className="flex items-center gap-2 mt-1 text-xs">
                     {movie.vote_average > 0 && (
-                        <span className={`font-semibold ${movie.vote_average >= 7 ? 'text-green-500' : movie.vote_average >= 5 ? 'text-yellow-500' : 'text-red-500'}`}>
+                        <span className={`font-semibold ${getRatingStyle(movie.vote_average).text}`}>
                             {movie.vote_average.toFixed(1)}<span className="text-[8px] text-gray-500 font-normal ml-0.5">TMDB</span>
                         </span>
                     )}

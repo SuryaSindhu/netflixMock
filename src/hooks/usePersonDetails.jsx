@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { TMDB_OPTIONS } from '../utils/constants';
+import { TMDB_OPTIONS, TMDB_BASE_URL } from '../utils/constants';
 
 const usePersonDetails = (personId) => {
     const [person, setPerson] = useState(null);
@@ -15,12 +15,12 @@ const usePersonDetails = (personId) => {
         setMovieCredits([]);
         setTvCredits([]);
 
-        fetch(`https://api.themoviedb.org/3/person/${personId}?language=en-US`, options)
+        fetch(`${TMDB_BASE_URL}/person/${personId}?language=en-US`, options)
             .then(res => res.json())
             .then(data => setPerson(data))
             .catch(err => { if (err.name !== 'AbortError') console.error(err); });
 
-        fetch(`https://api.themoviedb.org/3/person/${personId}/combined_credits?language=en-US`, options)
+        fetch(`${TMDB_BASE_URL}/person/${personId}/combined_credits?language=en-US`, options)
             .then(res => res.json())
             .then(data => {
                 const movies = (data.cast || [])

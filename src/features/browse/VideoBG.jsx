@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { TMDB_OPTIONS } from "../../utils/constants";
+import { TMDB_OPTIONS, TMDB_BASE_URL, pickTrailer } from "../../utils/constants";
 
 const VideoBG = ({ movieId, contentType = "movie", backdropPath }) => {
     const [trailerId, setTrailerId] = useState(null);
@@ -12,22 +12,12 @@ const VideoBG = ({ movieId, contentType = "movie", backdropPath }) => {
         if (movieId) {
             const type = contentType === "tv" ? "tv" : "movie";
             fetch(
-                `https://api.themoviedb.org/3/${type}/${movieId}/videos?language=en-US`,
+                `${TMDB_BASE_URL}/${type}/${movieId}/videos?language=en-US`,
                 TMDB_OPTIONS
             )
                 .then((res) => res.json())
                 .then((data) => {
-                    const video =
-                        data.results.find(
-                            (v) => v.type === "Trailer" && v.site === "YouTube"
-                        ) ||
-                        data.results.find(
-                            (v) => v.type === "Teaser" && v.site === "YouTube"
-                        ) ||
-                        data.results.find(
-                            (v) => v.type === "Clip" && v.site === "YouTube"
-                        ) ||
-                        data.results.find((v) => v.site === "YouTube");
+                    const video = pickTrailer(data.results);
                     if (video) {
                         setTrailerId(video.key);
                     } else {

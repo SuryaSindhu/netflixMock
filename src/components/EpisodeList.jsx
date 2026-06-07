@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { TMDB_OPTIONS } from '../utils/constants';
+import { TMDB_OPTIONS, TMDB_BASE_URL } from '../utils/constants';
 import EpisodeCard from './EpisodeCard';
+import { EpisodeListShimmer } from './shared/Shimmer';
 
 const EpisodeList = ({ showId, numberOfSeasons }) => {
     const [selectedSeason, setSelectedSeason] = useState(1);
@@ -23,7 +24,7 @@ const EpisodeList = ({ showId, numberOfSeasons }) => {
 
     useEffect(() => {
         setLoading(true);
-        fetch(`https://api.themoviedb.org/3/tv/${showId}/season/${selectedSeason}?language=en-US`, TMDB_OPTIONS)
+        fetch(`${TMDB_BASE_URL}/tv/${showId}/season/${selectedSeason}?language=en-US`, TMDB_OPTIONS)
             .then(res => res.json())
             .then(data => {
                 setEpisodes(data.episodes || []);
@@ -81,18 +82,7 @@ const EpisodeList = ({ showId, numberOfSeasons }) => {
             </div>
 
             {loading ? (
-                <div className="space-y-4 animate-pulse">
-                    {[1, 2, 3].map(i => (
-                        <div key={i} className="flex gap-4 py-4">
-                            <div className="w-40 aspect-video bg-zinc-800 rounded flex-shrink-0" />
-                            <div className="flex-1 space-y-2">
-                                <div className="h-4 w-1/2 bg-zinc-800 rounded" />
-                                <div className="h-3 w-1/4 bg-zinc-800 rounded" />
-                                <div className="h-3 w-full bg-zinc-800 rounded" />
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                <EpisodeListShimmer />
             ) : episodes.length > 0 ? (
                 <div>
                     {episodes.slice(0, visibleCount).map((episode) => (

@@ -3,13 +3,14 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Login from './pages/Login';
 import Browse from './pages/Browse';
 import Header from './features/browse/Header';
-import PlayPage from './pages/PlayPage';
-import ShowPage from './pages/ShowPage';
+import MoviePage from './pages/MoviePage';
+import ShowsPage from './pages/ShowsPage';
 import PersonPage from './pages/PersonPage';
 import SearchPage from './pages/SearchPage';
 import NotFound from './pages/NotFound';
-import ProtectedRoute from './components/ProtectedRoute';
-import ErrorBoundary from './components/ErrorBoundary';
+import ProtectedRoute from './utils/ProtectedRoute';
+import ErrorBoundary from './components/shared/ErrorBoundary';
+import ScrollToTop from './components/shared/ScrollToTop';
 import { AppProvider } from './context/AppContext';
 
 
@@ -21,6 +22,7 @@ function App() {
             <ErrorBoundary>
             <div className="App">
                 <Header />
+                <ScrollToTop />
                 <AnimatePresence mode="popLayout">
                     <motion.div
                         key={location.pathname}
@@ -53,11 +55,11 @@ export const appRouter = createBrowserRouter([
             },
             {
                 path: "/movies/:movieId",
-                element: <ProtectedRoute><PlayPage /></ProtectedRoute>,
+                element: <ProtectedRoute><MoviePage /></ProtectedRoute>,
             },
             {
                 path: "/shows/:showId",
-                element: <ProtectedRoute><ShowPage /></ProtectedRoute>,
+                element: <ProtectedRoute><ShowsPage /></ProtectedRoute>,
             },
             {
                 path: "/person/:personId",

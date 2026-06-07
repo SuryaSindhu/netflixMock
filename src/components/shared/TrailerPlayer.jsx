@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
+import { IMG_CDN_W500 as IMG_CDN } from '../../utils/constants';
 
-const TrailerPlayer = ({ trailerId, backdropPath, posterPath, title }) => {
+const TrailerPlayer = ({ trailerId, backdropPath, posterPath, title, variant = 'desktop' }) => {
     const [isMuted, setIsMuted] = useState(true);
     const iframeRef = useRef(null);
     const containerRef = useRef(null);
@@ -34,7 +35,24 @@ const TrailerPlayer = ({ trailerId, backdropPath, posterPath, title }) => {
         }
     };
 
+    const isMobile = variant === 'mobile';
+
+    // --- Trailer iframe ---
     if (trailerId) {
+        if (isMobile) {
+            return (
+                <div className="w-full">
+                    <iframe
+                        className="w-full aspect-video"
+                        src={`https://www.youtube-nocookie.com/embed/${trailerId}?autoplay=1&mute=1&loop=1&playlist=${trailerId}&controls=1&modestbranding=1&rel=0`}
+                        title={`${title} Trailer`}
+                        allow="autoplay; encrypted-media"
+                        allowFullScreen
+                    />
+                </div>
+            );
+        }
+
         return (
             <div ref={containerRef} className="w-full h-[55vh] relative overflow-hidden bg-black">
                 <iframe
@@ -79,28 +97,30 @@ const TrailerPlayer = ({ trailerId, backdropPath, posterPath, title }) => {
         );
     }
 
+    // --- Fallback: backdrop image ---
     if (backdropPath) {
         return (
-            <div className="w-full h-[55vh] relative">
+            <div className={`w-full ${isMobile ? 'h-[30vh]' : 'h-[55vh]'} relative`}>
                 <img
                     src={`https://image.tmdb.org/t/p/original${backdropPath}`}
                     alt={title}
                     className="w-full h-full object-cover"
                 />
-                <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-zinc-950 to-transparent" />
+                <div className={`absolute ${isMobile ? 'inset-0' : 'bottom-0 left-0 right-0 h-24'} bg-gradient-to-t from-zinc-950 to-transparent`} />
             </div>
         );
     }
 
+    // --- Fallback: poster image ---
     if (posterPath) {
         return (
-            <div className="w-full h-[55vh] relative bg-zinc-900 flex items-center justify-center">
+            <div className={`w-full ${isMobile ? 'h-[30vh]' : 'h-[55vh]'} relative bg-zinc-900 flex items-center justify-center`}>
                 <img
-                    src={`https://image.tmdb.org/t/p/w500${posterPath}`}
+                    src={IMG_CDN + posterPath}
                     alt={title}
                     className="h-full object-contain"
                 />
-                <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-zinc-950 to-transparent" />
+                <div className={`absolute ${isMobile ? 'inset-0' : 'bottom-0 left-0 right-0 h-24'} bg-gradient-to-t from-zinc-950 to-transparent`} />
             </div>
         );
     }

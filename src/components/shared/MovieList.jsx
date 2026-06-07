@@ -1,16 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react'
 import MovieCard from './MovieCard';
-
-const MovieListShimmer = () => (
-  <div className="px-3 md:px-6 py-4 md:py-8 animate-pulse">
-    <div className="h-5 md:h-6 w-32 md:w-40 bg-zinc-800 rounded mb-3 md:mb-4" />
-    <div className="flex gap-4 overflow-hidden">
-      {[...Array(8)].map((_, i) => (
-        <div key={i} className="w-28 md:w-48 h-44 md:h-72 bg-zinc-800 rounded-md flex-shrink-0" />
-      ))}
-    </div>
-  </div>
-);
+import { MovieListShimmer } from './Shimmer';
 
 const MovieList = ({ title, movies }) => {
   const [showArrows, setShowArrows] = useState(false);

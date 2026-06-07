@@ -1,5 +1,5 @@
 import React from "react";
-import MovieList from "../../components/MovieList";
+import MovieList from "../../components/shared/MovieList";
 import useCategory from "../../hooks/useCategory";
 import { useAppContext } from "../../context/AppContext";
 

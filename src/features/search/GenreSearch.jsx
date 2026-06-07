@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { TMDB_OPTIONS } from '../../utils/constants';
-import MovieList from '../../components/MovieList';
+import { TMDB_OPTIONS, TMDB_BASE_URL } from '../../utils/constants';
+import MovieList from '../../components/shared/MovieList';
 import { useAppContext } from '../../context/AppContext';
 
 const GenreSearch = () => {
@@ -20,12 +20,12 @@ const GenreSearch = () => {
 
     // Fetch genre lists
     useEffect(() => {
-        fetch('https://api.themoviedb.org/3/genre/movie/list?language=en-US', TMDB_OPTIONS)
+        fetch(`${TMDB_BASE_URL}/genre/movie/list?language=en-US`, TMDB_OPTIONS)
             .then(res => res.json())
             .then(data => setMovieGenres(data.genres || []))
             .catch(err => console.error(err));
 
-        fetch('https://api.themoviedb.org/3/genre/tv/list?language=en-US', TMDB_OPTIONS)
+        fetch(`${TMDB_BASE_URL}/genre/tv/list?language=en-US`, TMDB_OPTIONS)
             .then(res => res.json())
             .then(data => setTvGenres(data.genres || []))
             .catch(err => console.error(err));
@@ -84,8 +84,8 @@ const GenreSearch = () => {
 
             try {
                 const [movieRes, tvRes] = await Promise.all([
-                    fetch(`https://api.themoviedb.org/3/discover/movie?with_genres=${genreIds}&language=en-US&page=1&sort_by=popularity.desc`, TMDB_OPTIONS),
-                    fetch(`https://api.themoviedb.org/3/discover/tv?with_genres=${genreIds}&language=en-US&page=1&sort_by=popularity.desc`, TMDB_OPTIONS),
+                    fetch(`${TMDB_BASE_URL}/discover/movie?with_genres=${genreIds}&language=en-US&page=1&sort_by=popularity.desc`, TMDB_OPTIONS),
+                    fetch(`${TMDB_BASE_URL}/discover/tv?with_genres=${genreIds}&language=en-US&page=1&sort_by=popularity.desc`, TMDB_OPTIONS),
                 ]);
 
                 const [movieData, tvData] = await Promise.all([movieRes.json(), tvRes.json()]);

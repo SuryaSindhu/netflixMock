@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { TMDB_OPTIONS } from '../../utils/constants';
-import MovieList from '../../components/MovieList';
+import { TMDB_OPTIONS, TMDB_BASE_URL } from '../../utils/constants';
+import MovieList from '../../components/shared/MovieList';
+import CastSection from '../../components/shared/CastSection';
+import { SearchResultsShimmer } from '../../components/shared/Shimmer';
 import { useAppContext } from '../../context/AppContext';
 
 const TextSearch = () => {
@@ -11,7 +12,6 @@ const TextSearch = () => {
     const [tvResults, setTvResults] = useState(searchCache.tvResults);
     const [personResults, setPersonResults] = useState(searchCache.personResults);
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
 
     // Save to cache whenever results change
     useEffect(() => {
@@ -35,7 +35,7 @@ const TextSearch = () => {
         }
 
         setLoading(true);
-        fetch(`https://api.themoviedb.org/3/search/multi?query=${encodeURIComponent(searchQuery)}&language=en-US&page=1`, TMDB_OPTIONS)
+        fetch(`${TMDB_BASE_URL}/search/multi?query=${encodeURIComponent(searchQuery)}&language=en-US&page=1`, TMDB_OPTIONS)
             .then(res => res.json())
             .then(data => {
                 const results = data.results || [];
@@ -86,22 +86,7 @@ const TextSearch = () => {
             </div>
 
             {/* Loading shimmer */}
-            {loading && (
-                <div className="animate-pulse space-y-6 px-2">
-                    <div className="h-5 w-32 bg-zinc-800 rounded" />
-                    <div className="flex gap-2 md:gap-4 overflow-hidden">
-                        {[...Array(6)].map((_, i) => (
-                            <div key={i} className="w-28 md:w-48 h-44 md:h-72 bg-zinc-800 rounded-md flex-shrink-0" />
-                        ))}
-                    </div>
-                    <div className="h-5 w-28 bg-zinc-800 rounded" />
-                    <div className="flex gap-2 md:gap-4 overflow-hidden">
-                        {[...Array(6)].map((_, i) => (
-                            <div key={i} className="w-28 md:w-48 h-44 md:h-72 bg-zinc-800 rounded-md flex-shrink-0" />
-                        ))}
-                    </div>
-                </div>
-            )}
+            {loading && <SearchResultsShimmer />}
 
             {/* No results */}
             {!loading && query && !hasResults && (
@@ -121,28 +106,11 @@ const TextSearch = () => {
                         <MovieList title={`TV Shows (${tvResults.length})`} movies={tvResults} />
                     )}
                     {personResults.length > 0 && (
-                        <div className="px-6 mt-6">
-                            <h2 className="text-xl font-bold text-white mb-4">People ({personResults.length})</h2>
-                            <div className="flex overflow-x-scroll gap-4 pb-4 scrollbar-hide">
-                                {personResults.map(person => (
-                                    <div key={person.id} className="flex-shrink-0 w-32 text-center cursor-pointer" onClick={() => navigate(`/person/${person.id}`)}>
-                                        {person.profile_path ? (
-                                            <img
-                                                src={`https://image.tmdb.org/t/p/w185${person.profile_path}`}
-                                                alt={person.name}
-                                                className="w-32 h-32 object-cover rounded-full"
-                                            />
-                                        ) : (
-                                            <div className="w-32 h-32 rounded-full bg-zinc-800 flex items-center justify-center text-gray-500 text-3xl">
-                                                👤
-                                            </div>
-                                        )}
-                                        <p className="text-white text-sm mt-2 font-medium">{person.name}</p>
-                                        <p className="text-gray-400 text-xs">{person.known_for_department}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+                        <CastSection
+                            cast={personResults}
+                            title={`People (${personResults.length})`}
+                            subtitleKey="known_for_department"
+                        />
                     )}
                 </div>
             )}

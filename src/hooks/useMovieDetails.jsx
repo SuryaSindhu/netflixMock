@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { TMDB_OPTIONS } from '../utils/constants';
+import { TMDB_OPTIONS, TMDB_BASE_URL, pickTrailer } from '../utils/constants';
 
 const useMovieDetails = (movieId) => {
     const [movie, setMovie] = useState(null);
@@ -25,64 +25,49 @@ const useMovieDetails = (movieId) => {
         setCertification(null);
         setProviders(null);
 
-        fetch(`https://api.themoviedb.org/3/movie/${movieId}?language=en-US`, options)
+        // Single combined request using append_to_response
+        fetch(
+            `${TMDB_BASE_URL}/movie/${movieId}?language=en-US&append_to_response=credits,videos,similar,recommendations,release_dates,watch/providers`,
+            options
+        )
             .then(res => res.json())
             .then(data => {
                 setMovie(data);
-                if (data.genres?.length > 0) {
-                    const genreIds = data.genres.map(g => g.id).join(',');
-                    fetch(`https://api.themoviedb.org/3/discover/movie?with_genres=${genreIds}&language=en-US&page=1&sort_by=popularity.desc`, options)
-                        .then(res => res.json())
-                        .then(res => setGenreMovies((res.results?.filter(m => m.id !== data.id) || []).map(m => ({ ...m, media_type: 'movie' }))))
-                        .catch(err => { if (err.name !== 'AbortError') console.error(err); });
-                }
-            })
-            .catch(err => { if (err.name !== 'AbortError') console.error(err); });
 
-        fetch(`https://api.themoviedb.org/3/movie/${movieId}/credits?language=en-US`, options)
-            .then(res => res.json())
-            .then(data => setCast(data.cast || []))
-            .catch(err => { if (err.name !== 'AbortError') console.error(err); });
+                // Credits
+                setCast(data.credits?.cast || []);
 
-        fetch(`https://api.themoviedb.org/3/movie/${movieId}/videos?language=en-US`, options)
-            .then(res => res.json())
-            .then(data => {
-                const video = data.results.find(v => v.type === 'Trailer' && v.site === 'YouTube')
-                    || data.results.find(v => v.type === 'Teaser' && v.site === 'YouTube')
-                    || data.results.find(v => v.type === 'Clip' && v.site === 'YouTube')
-                    || data.results.find(v => v.site === 'YouTube');
+                // Trailer
+                const video = pickTrailer(data.videos?.results);
                 if (video) setTrailerId(video.key);
-            })
-            .catch(err => { if (err.name !== 'AbortError') console.error(err); });
 
-        fetch(`https://api.themoviedb.org/3/movie/${movieId}/similar?language=en-US&page=1`, options)
-            .then(res => res.json())
-            .then(data => setSimilar((data.results || []).map(m => ({ ...m, media_type: 'movie' }))))
-            .catch(err => { if (err.name !== 'AbortError') console.error(err); });
+                // Similar & Recommendations
+                setSimilar((data.similar?.results || []).map(m => ({ ...m, media_type: 'movie' })));
+                setRecommendations((data.recommendations?.results || []).map(m => ({ ...m, media_type: 'movie' })));
 
-        fetch(`https://api.themoviedb.org/3/movie/${movieId}/recommendations?language=en-US&page=1`, options)
-            .then(res => res.json())
-            .then(data => setRecommendations((data.results || []).map(m => ({ ...m, media_type: 'movie' }))))
-            .catch(err => { if (err.name !== 'AbortError') console.error(err); });
-
-        fetch(`https://api.themoviedb.org/3/movie/${movieId}/release_dates`, options)
-            .then(res => res.json())
-            .then(data => {
-                const india = data.results?.find(r => r.iso_3166_1 === 'IN');
-                const us = data.results?.find(r => r.iso_3166_1 === 'US');
+                // Certification
+                const releaseDates = data.release_dates?.results;
+                const india = releaseDates?.find(r => r.iso_3166_1 === 'IN');
+                const us = releaseDates?.find(r => r.iso_3166_1 === 'US');
                 const entry = india || us;
                 if (entry) {
                     const cert = entry.release_dates.find(d => d.certification)?.certification;
                     if (cert) setCertification(cert);
                 }
-            })
-            .catch(err => { if (err.name !== 'AbortError') console.error(err); });
 
-        fetch(`https://api.themoviedb.org/3/movie/${movieId}/watch/providers`, options)
-            .then(res => res.json())
-            .then(data => {
-                const region = data.results?.IN || data.results?.US;
+                // Watch Providers
+                const wpResults = data['watch/providers']?.results;
+                const region = wpResults?.IN || wpResults?.US;
                 if (region) setProviders(region);
+
+                // Genre-based discovery (depends on genres from main response)
+                if (data.genres?.length > 0) {
+                    const genreIds = data.genres.map(g => g.id).join(',');
+                    fetch(`${TMDB_BASE_URL}/discover/movie?with_genres=${genreIds}&language=en-US&page=1&sort_by=popularity.desc`, options)
+                        .then(res => res.json())
+                        .then(res => setGenreMovies((res.results?.filter(m => m.id !== data.id) || []).map(m => ({ ...m, media_type: 'movie' }))))
+                        .catch(err => { if (err.name !== 'AbortError') console.error(err); });
+                }
             })
             .catch(err => { if (err.name !== 'AbortError') console.error(err); });
 

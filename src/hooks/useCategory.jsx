@@ -1,4 +1,5 @@
 import { useAppContext } from '../context/AppContext';
+import { TMDB_BASE_URL } from '../utils/constants';
 import useFetch from './useFetch';
 
 const ENDPOINTS = {
@@ -12,7 +13,7 @@ const ENDPOINTS = {
 const useCategory = (category) => {
     const { contentType } = useAppContext();
     const path = ENDPOINTS[category]?.[contentType];
-    const url = path ? `https://api.themoviedb.org/3/${path}?language=en-US&page=1` : null;
+    const url = path ? `${TMDB_BASE_URL}/${path}?language=en-US&page=1` : null;
 
     const data = useFetch(url);
     return data?.results ?? [];

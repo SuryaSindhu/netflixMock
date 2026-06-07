@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { IMG_CDN_W500 as IMG_CDN } from '../utils/constants';
-import { PersonPageShimmer } from '../components/Shimmer';
-import MovieList from '../components/MovieList';
+import { PersonPageShimmer } from '../components/shared/Shimmer';
+import MovieList from '../components/shared/MovieList';
 import usePersonDetails from '../hooks/usePersonDetails';
 
 const PersonPage = () => {

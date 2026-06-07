@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { TMDB_OPTIONS } from "../../utils/constants";
+import { TMDB_OPTIONS, TMDB_BASE_URL } from "../../utils/constants";
 import { useAppContext } from "../../context/AppContext";
 
 const MobileHero = ({ movie }) => {
@@ -12,7 +12,7 @@ const MobileHero = ({ movie }) => {
     useEffect(() => {
         const type = contentType === "tv" ? "tv" : "movie";
         fetch(
-            `https://api.themoviedb.org/3/${type}/${movie.id}?language=en-US`,
+            `${TMDB_BASE_URL}/${type}/${movie.id}?language=en-US`,
             TMDB_OPTIONS
         )
             .then((res) => res.json())

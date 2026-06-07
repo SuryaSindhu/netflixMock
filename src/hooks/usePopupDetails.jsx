@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
-import { TMDB_OPTIONS } from '../utils/constants';
+import { TMDB_OPTIONS, TMDB_BASE_URL } from '../utils/constants';
 
 const usePopupDetails = (movieId, isTV) => {
     const [details, setDetails] = useState(null);
 
     useEffect(() => {
         const endpoint = isTV
-            ? `https://api.themoviedb.org/3/tv/${movieId}?language=en-US`
-            : `https://api.themoviedb.org/3/movie/${movieId}?language=en-US`;
+            ? `${TMDB_BASE_URL}/tv/${movieId}?language=en-US`
+            : `${TMDB_BASE_URL}/movie/${movieId}?language=en-US`;
 
         fetch(endpoint, TMDB_OPTIONS)
             .then(res => res.json())

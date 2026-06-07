@@ -2,7 +2,7 @@ import React from 'react'
 import useCategory from '../hooks/useCategory';
 import MainContainer from '../features/browse/MainContainer';
 import SecondaryContainer from '../features/browse/SecondaryContainer';
-import { BrowseShimmer } from '../components/Shimmer';
+import { BrowseShimmer } from '../components/shared/Shimmer';
 
 const Browse = () => {
   const nowPlaying = useCategory('nowPlaying');
