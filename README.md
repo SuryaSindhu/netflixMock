@@ -32,7 +32,10 @@ A responsive Netflix-inspired web app built with React. Browse movies and TV sho
 🔍 **Search**
 
 - Text search: debounced multi-search (movies, TV, people) with cached results
+- Search results cached in context — navigate away and come back, your last query and results stay intact (no re-fetch)
 - Genre mix: pick up to 3 genres, discover all combo matches (deduplicated)
+- AI Search: describe what you're in the mood for (e.g. "dark sci-fi like Blade Runner") — powered by Google Gemini, returns matching movies & TV shows via TMDB
+- Active tab remembered across navigation
 
 ✨ **UI/UX**
 
@@ -53,6 +56,7 @@ A responsive Netflix-inspired web app built with React. Browse movies and TV sho
 | API | TMDB (The Movie Database) |
 | Animations | Framer Motion |
 | State | Context API + Custom Hooks |
+| AI | Google Gemini (free tier) |
 
 ## Screenshots
 
