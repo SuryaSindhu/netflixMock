@@ -37,10 +37,16 @@ const GptSearch = () => {
         if (!response.ok) {
             const status = response.status;
             if (status === 429) throw new Error('Rate limit reached. Please wait a moment and try again.');
+            if (status === 503) throw new Error('AI model is busy due to high demand. Please try again in a few seconds.');
             throw new Error('Gemini API request failed');
         }
 
         const data = await response.json();
+
+        // Handle UNAVAILABLE status in response body
+        if (data.error?.status === 'UNAVAILABLE') {
+            throw new Error('AI model is temporarily unavailable. Please try again in a few seconds.');
+        }
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
         // Parse the JSON from the response (handle possible markdown wrapping)
         const cleaned = text.replace(/```json\n?|```\n?/g, '').trim();
