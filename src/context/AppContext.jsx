@@ -16,12 +16,16 @@ export const AppProvider = ({ children }) => {
         selectedGenres: [],
         genreResults: [],
         genreSearched: false,
+        aiQuery: '',
+        aiMovieResults: [],
+        aiShowResults: [],
+        activeTab: 'search',
     });
     const navigate = useNavigate();
 
     const clearUser = () => {
         setUser(null);
-        setSearchCache({ query: '', movieResults: [], tvResults: [], personResults: [], selectedGenres: [], genreResults: [], genreSearched: false });
+        setSearchCache({ query: '', movieResults: [], tvResults: [], personResults: [], selectedGenres: [], genreResults: [], genreSearched: false, aiQuery: '', aiMovieResults: [], aiShowResults: [], activeTab: 'search' });
     };
 
     useEffect(() => {

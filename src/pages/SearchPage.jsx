@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
 import TextSearch from '../features/search/TextSearch';
 import GenreSearch from '../features/search/GenreSearch';
+import GptSearch from '../features/search/GptSearch';
 import { NETFLIX_BG } from '../utils/constants';
+import { useAppContext } from '../context/AppContext';
 
 const SearchPage = () => {
-    const [activeTab, setActiveTab] = useState('search');
+    const { searchCache, setSearchCache } = useAppContext();
+    const [activeTab, setActiveTab] = useState(searchCache.activeTab || 'search');
+
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+        setSearchCache(prev => ({ ...prev, activeTab: tab }));
+    };
 
     return (
         <div className="relative min-h-screen">
@@ -24,7 +32,7 @@ const SearchPage = () => {
                 <div className="flex justify-center mb-6 md:mb-8">
                     <div className="bg-zinc-900 rounded-lg p-1 flex gap-1">
                         <button
-                            onClick={() => setActiveTab('search')}
+                            onClick={() => handleTabChange('search')}
                             className={`px-4 md:px-6 py-2 md:py-2.5 rounded-md text-xs md:text-sm font-medium transition-all cursor-pointer ${
                                 activeTab === 'search'
                                     ? 'bg-white text-black'
@@ -34,7 +42,7 @@ const SearchPage = () => {
                             🔍 Search
                         </button>
                         <button
-                            onClick={() => setActiveTab('genre')}
+                            onClick={() => handleTabChange('genre')}
                             className={`px-4 md:px-6 py-2 md:py-2.5 rounded-md text-xs md:text-sm font-medium transition-all cursor-pointer ${
                                 activeTab === 'genre'
                                     ? 'bg-white text-black'
@@ -43,11 +51,23 @@ const SearchPage = () => {
                         >
                             🎬 Genre Mix
                         </button>
+                        <button
+                            onClick={() => handleTabChange('ai')}
+                            className={`px-4 md:px-6 py-2 md:py-2.5 rounded-md text-xs md:text-sm font-medium transition-all cursor-pointer ${
+                                activeTab === 'ai'
+                                    ? 'bg-white text-black'
+                                    : 'text-gray-400 hover:text-white'
+                            }`}
+                        >
+                            🤖 AI Search
+                        </button>
                     </div>
                 </div>
 
                 {/* Active Tab Content */}
-                {activeTab === 'search' ? <TextSearch /> : <GenreSearch />}
+                {activeTab === 'search' && <TextSearch />}
+                {activeTab === 'genre' && <GenreSearch />}
+                {activeTab === 'ai' && <GptSearch />}
             </div>
         </div>
     );
