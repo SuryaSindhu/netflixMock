@@ -2,7 +2,7 @@
 
 A responsive Netflix-inspired web app built with React. Browse movies and TV shows, watch trailers, search by text or genre, and explore show details — all powered by the TMDB API.
 
-**[Live Demo →](https://your-firebase-url.web.app)**
+**[Live Demo →](https://netflixgpt-214cd.web.app/)**
 
 ## Features
 
@@ -58,6 +58,10 @@ A responsive Netflix-inspired web app built with React. Browse movies and TV sho
 | State | Context API + Custom Hooks |
 | AI | Google Gemini (free tier) |
 
+## Recodings
+- Desktop view: https://drive.google.com/file/d/1JIDV2x83mHhGYfPE-5UPf3BzdDuhbNiy/view?usp=drive_link
+- Mobile view: https://drive.google.com/file/d/1FrYdRGhnv9bmSIWl3nriylBHIZheQDLc/view?usp=drive_link
+
 ## Screenshots
 
-<!-- Add screenshots here -->
+- https://drive.google.com/drive/folders/1074texd5GiPT9hfUDgPYUr3NLT_fMJ66?usp=sharing
